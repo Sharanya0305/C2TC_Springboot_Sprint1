@@ -1,45 +1,47 @@
-package com.tnsif.mall1.service; // Changed package name
+package com.tnsif.mall1.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.tnsif.mall1.entity.Mall; // Changed import
-import com.tnsif.mall1.repository.MallRepository; // Changed import
-
-import jakarta.persistence.NoResultException;
-import jakarta.transaction.Transactional;
+import com.tnsif.mall1.entity.Mall;
+import com.tnsif.mall1.repository.MallRepository;
 
 @Service
-@Transactional
-public class MallService { // Class name remains 'MallService'
+public class MallService {
 
     @Autowired
-    private MallRepository repo; // Repository type remains 'MallRepository'
+    private MallRepository mallRepository;
 
-    // List all malls
-    public List<Mall> listAll() { // Generic type remains 'Mall'
-        return repo.findAll();
+    // Get all malls
+    public List<Mall> listAll() {
+        return mallRepository.findAll();
     }
 
-    // Save a new mall
-    public void save(Mall mall) { // Parameter type remains 'Mall'
-        repo.save(mall);
+    // Save a new mall and return the saved object
+    public Mall save(Mall mall) {
+        return mallRepository.save(mall); // JPA save() returns saved entity
     }
 
-    // Get mall by ID
-    public Mall get(Long id) { // Return type remains 'Mall'
-        return repo.findById(id).orElseThrow(NoResultException::new);
-    }
-
-    // Delete mall by ID
-    public void delete(Long id) {
-        repo.deleteById(id);
+    // Get a mall by ID
+    public Mall get(Long id) {
+        return mallRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Mall not found with id: " + id));
     }
 
     // Update an existing mall
-    public void update(Mall mall) { // Parameter type remains 'Mall'
-        repo.save(mall);
+    public Mall update(Mall mall) {
+        // save() will update if the entity has an existing ID
+        return mallRepository.save(mall);
+    }
+
+    // Delete a mall by ID
+    public void delete(Long id) {
+        if (!mallRepository.existsById(id)) {
+            throw new NoSuchElementException("Mall not found with id: " + id);
+        }
+        mallRepository.deleteById(id);
     }
 }

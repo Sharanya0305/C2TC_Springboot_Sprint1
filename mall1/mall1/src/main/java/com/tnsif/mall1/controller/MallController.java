@@ -1,74 +1,77 @@
-package com.tnsif.mall1.controller; // Changed package name
+package com.tnsif.mall1.controller;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.*;
 
-import com.tnsif.mall1.entity.Mall; // Changed import
-import com.tnsif.mall1.service.MallService; // Changed import
-
-import jakarta.persistence.NoResultException;
+import com.tnsif.mall1.entity.Mall;
+import com.tnsif.mall1.service.MallService;
 
 @RestController
-public class MallController { // Class name remains 'MallController'
+@RequestMapping("/mall1service") // Base path
+public class MallController {
 
     @Autowired
-    private MallService mallService; // Service type remains 'MallService'
+    private MallService mallService;
 
     // Get all malls
-    @GetMapping("/mall1service") // Changed endpoint path
-    public List<Mall> list() { // Generic type remains 'Mall'
-        return mallService.listAll();
+    @GetMapping
+    public ResponseEntity<List<Mall>> listAllMalls() {
+        List<Mall> malls = mallService.listAll();
+        if (malls.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(malls, HttpStatus.OK);
     }
 
     // Add a new mall
-    @PostMapping("/mall1service") // Changed endpoint path
-    public void add(@RequestBody Mall mall) { // Parameter type remains 'Mall'
-        mallService.save(mall);
+    @PostMapping
+    public ResponseEntity<Mall> addMall(@RequestBody Mall mall) {
+        Mall savedMall = mallService.save(mall);
+        return new ResponseEntity<>(savedMall, HttpStatus.CREATED);
     }
 
     // Get mall by ID
-    @GetMapping("/mall1service/{id}") // Changed endpoint path
-    public ResponseEntity<Mall> get(@PathVariable Long id) { // Generic type remains 'Mall'
+    @GetMapping("/{id}")
+    public ResponseEntity<Mall> getMallById(@PathVariable Long id) {
         try {
-            Mall mall = mallService.get(id); // Type remains 'Mall'
-            return new ResponseEntity<Mall>(mall, HttpStatus.OK); // Generic type remains 'Mall'
-        } catch (NoResultException e) {
-            return new ResponseEntity<Mall>(HttpStatus.NOT_FOUND); // Generic type remains 'Mall'
+            Mall mall = mallService.get(id);
+            return new ResponseEntity<>(mall, HttpStatus.OK);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
     // Delete mall by ID
-    @DeleteMapping("/mall1service/{id}") // Changed endpoint path
-    public void delete(@PathVariable Long id) {
-        mallService.delete(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteMall(@PathVariable Long id) {
+        try {
+            mallService.delete(id);
+            return new ResponseEntity<>("Mall deleted successfully", HttpStatus.OK);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>("Mall not found", HttpStatus.NOT_FOUND);
+        }
     }
 
     // Update an existing mall
-    @PutMapping("/mall1service/{id}") // Changed endpoint path
-    public ResponseEntity<Mall> update(@PathVariable Long id, @RequestBody Mall updateMall) { // Generic type and parameter type remain 'Mall'
+    @PutMapping("/{id}")
+    public ResponseEntity<Mall> updateMall(@PathVariable Long id, @RequestBody Mall updateMall) {
         try {
-            Mall existingMall = mallService.get(id); // Type remains 'Mall'
+            Mall existingMall = mallService.get(id);
 
-            // Update fields
             existingMall.setMallName(updateMall.getMallName());
             existingMall.setLocation(updateMall.getLocation());
             existingMall.setTotalShops(updateMall.getTotalShops());
             existingMall.setAreaSqFt(updateMall.getAreaSqFt());
 
             mallService.update(existingMall);
-            return new ResponseEntity<Mall>(existingMall, HttpStatus.OK); // Generic type remains 'Mall'
-        } catch (NoResultException e) {
-            return new ResponseEntity<Mall>(HttpStatus.NOT_FOUND); // Generic type remains 'Mall'
+            return new ResponseEntity<>(existingMall, HttpStatus.OK);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 }

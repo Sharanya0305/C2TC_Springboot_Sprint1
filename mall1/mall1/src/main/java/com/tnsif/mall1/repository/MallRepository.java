@@ -1,7 +1,8 @@
-package com.tnsif.mall1.repository; // Changed package name
+package com.tnsif.mall1.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.tnsif.mall1.entity.Mall; // Changed import
+import com.tnsif.mall1.entity.Mall;
 
-public interface MallRepository extends JpaRepository<Mall, Long> { // Interface name remains 'MallRepository'
+public interface MallRepository extends JpaRepository<Mall, Long> {
+    
 }

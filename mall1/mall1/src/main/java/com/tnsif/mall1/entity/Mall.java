@@ -1,30 +1,27 @@
-package com.tnsif.mall1.entity; // Changed package name
+package com.tnsif.mall1.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "malls") // Table name remains 'malls'
-public class Mall { // Class name remains 'Mall'
+@Table(name = "mall1")  // explicitly set table name
+public class Mall {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "mall_name")
     private String mallName;
-
-    @Column(name = "location")
     private String location;
-
-    @Column(name = "total_shops")
     private int totalShops;
-
-    @Column(name = "area_sq_ft")
     private double areaSqFt;
 
-    // Constructors
+    // Default constructor
     public Mall() {}
 
+    // Parameterized constructor (optional)
     public Mall(String mallName, String location, int totalShops, double areaSqFt) {
         this.mallName = mallName;
         this.location = location;
@@ -75,12 +72,12 @@ public class Mall { // Class name remains 'Mall'
 
     @Override
     public String toString() {
-        return "Mall{" + // Class name remains 'Mall' in toString
-               "id=" + id +
-               ", mallName='" + mallName + '\'' +
-               ", location='" + location + '\'' +
-               ", totalShops=" + totalShops +
-               ", areaSqFt=" + areaSqFt +
-               '}';
+        return "Mall{" +
+                "id=" + id +
+                ", mallName='" + mallName + '\'' +
+                ", location='" + location + '\'' +
+                ", totalShops=" + totalShops +
+                ", areaSqFt=" + areaSqFt +
+                '}';
     }
 }
